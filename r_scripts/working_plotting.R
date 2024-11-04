@@ -13,6 +13,12 @@ s02_raw <- read_csv("datasets/S1123KIP1_048K_S02_S7106_20240108_070004.Table.1.s
 s04_raw <- read_csv("datasets/S1123KIP1_048K_S04_S7112_20240108_070004.Table.1.selections.csv")
 
 
+
+# Make a figures folder ---------------------------------------------------
+
+dir.create("figures")
+
+
 # Combining datasets ------------------------------------------------------
 
 kipukas_raw <- bind_rows(s02_raw, s04_raw)
@@ -108,9 +114,9 @@ songs |>
 
 # Box and whisker plots ---------------------------------------------------
 
-songs_long |> 
+song_plot <- songs_long |> 
   ggplot(aes(x = value)) +
-  geom_density(aes(fill = site, colour = site), alpha = 0.5) +
+  geom_boxplot(aes(fill = site, colour = site), alpha = 0.5) +
   facet_wrap(
     ~variable,
     scales = "free",
@@ -119,12 +125,13 @@ songs_long |>
       `dur_90_percent_s` = "90% Duration (s)",
       `freq_95_percent_hz` = "95% Frequency (Hz)",
       `peak_freq_hz` = "Peak Frequency (Hz)",
-      `syllables_p_song` = "Syllables Per Song")))
+      `syllables_p_song` = "Syllables Per Song"))) +
+  labs(title = "Acoustic Measurements for Songs Across Two Kipuka")
 
 
-syllables_long |> 
+syllable_plot <- syllables_long |> 
   ggplot(aes(x = value)) +
-  geom_density(aes(fill = site, colour = site), alpha = 0.5) +
+  geom_boxplot(aes(fill = site, colour = site), alpha = 0.5) +
   facet_wrap(
     ~variable,
     scales = "free",
@@ -132,5 +139,13 @@ syllables_long |>
       `center_time_percent` = "Center Time (%)",
       `dur_90_percent_s` = "90% Duration (s)",
       `freq_95_percent_hz` = "95% Frequency (Hz)",
-      `peak_freq_hz` = "Peak Frequency (Hz)")))
-  
+      `peak_freq_hz` = "Peak Frequency (Hz)"))) +
+  labs(title = "Acoustic Measurements for Syllables Across Two Kipuka")
+
+
+
+# Export plots ------------------------------------------------------------
+
+ggsave(filename = "figures/songs_boxplot.png", plot = song_plot)  
+
+ggsave(filename = "figures/syllables_boxplot.png", plot = syllable_plot)
